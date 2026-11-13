@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Entrar - Mini Loja</title>
+  <link rel="stylesheet" href="css/estilo.css">
+</head>
+<body>
+  <div class="caixa">
+    <h1>Mini Loja</h1>
+    <form id="form-login">
+      <label for="usuario">Usuário</label>
+      <input type="text" id="usuario">
+
+      <label for="senha">Senha</label>
+      <input type="password" id="senha">
+
+      <button type="submit">Entrar</button>
+    </form>
+    <p id="mensagem" class="erro"></p>
+    <p><small>Para testar: usuário <b>aluno</b>, senha <b>1234</b></small></p>
+  </div>
+
+  <script src="js/loja.js"></script>
+  <script>
+    // Se já estiver logado, vai direto para a loja
+    if (estaLogado()) {
+      window.location.href = "produtos.html";
+    }
+
+    document.getElementById("form-login").addEventListener("submit", function (evento) {
+      evento.preventDefault();
+      var usuario = document.getElementById("usuario").value;
+      var senha = document.getElementById("senha").value;
+
+      if (fazerLogin(usuario, senha)) {
+        window.location.href = "produtos.html";
+      } else {
+        document.getElementById("mensagem").textContent = "Usuário ou senha incorretos.";
+      }
+    });
+  </script>
+</body>
+</html>
