@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Produtos - Mini Loja</title>
+  <link rel="stylesheet" href="css/estilo.css">
+</head>
+<body>
+  <header>
+    <strong>Mini Loja</strong>
+    <nav>
+      <a href="produtos.html">Produtos</a>
+      <a href="carrinho.html">Carrinho</a>
+    </nav>
+  </header>
+
+  <main>
+    <h2>Produtos</h2>
+    <div id="lista-produtos"></div>
+    <p id="mensagem" class="sucesso"></p>
+  </main>
+
+  <script src="js/loja.js"></script>
+  <script>
+    // Só entra quem fez login
+    if (!estaLogado()) {
+      window.location.href = "login.html";
+    }
+
+    // Monta a lista de produtos na tela
+    var lista = document.getElementById("lista-produtos");
+    PRODUTOS.forEach(function (produto) {
+      var div = document.createElement("div");
+      div.className = "item";
+      div.innerHTML =
+        "<span>" + produto.nome + " - " + formatarPreco(produto.preco) + "</span>" +
+        '<button data-id="' + produto.id + '">Adicionar ao carrinho</button>';
+      lista.appendChild(div);
+    });
+
+    // Clique em "Adicionar ao carrinho"
+    lista.addEventListener("click", function (evento) {
+      var id = evento.target.getAttribute("data-id");
+      if (id) {
+        adicionarAoCarrinho(Number(id));
+        document.getElementById("mensagem").textContent = "Produto adicionado ao carrinho.";
+      }
+    });
+
+  </script>
+</body>
+</html>
