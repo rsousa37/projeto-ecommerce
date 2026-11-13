@@ -11,6 +11,7 @@
     <nav>
       <a href="produtos.html">Produtos</a>
       <a href="carrinho.html">Carrinho</a>
+      <a href="#" id="link-sair">Sair</a>
     </nav>
   </header>
 
@@ -47,6 +48,11 @@
       }
     });
 
+    document.getElementById("link-sair").addEventListener("click", function (evento) {
+      evento.preventDefault();
+      sair();
+      window.location.href = "login.html";
+    });
   </script>
 </body>
 </html>

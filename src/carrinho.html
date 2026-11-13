@@ -11,6 +11,7 @@
     <nav>
       <a href="produtos.html">Produtos</a>
       <a href="carrinho.html">Carrinho</a>
+      <a href="#" id="link-sair">Sair</a>
     </nav>
   </header>
 
@@ -18,6 +19,8 @@
     <h2>Seu carrinho</h2>
     <div id="itens"></div>
     <p class="total" id="total"></p>
+    <button id="botao-finalizar">Finalizar compra</button>
+    <p id="mensagem" class="sucesso"></p>
   </main>
 
   <script src="js/loja.js"></script>
@@ -58,7 +61,23 @@
       }
     });
 
-    
+    document.getElementById("botao-finalizar").addEventListener("click", function () {
+      if (obterCarrinho().length === 0) {
+        document.getElementById("mensagem").textContent = "Adicione produtos antes de finalizar.";
+        return;
+      }
+      var total = formatarPreco(calcularTotal());
+      limparCarrinho();
+      mostrarCarrinho();
+      document.getElementById("mensagem").textContent = "Compra finalizada! Total pago: " + total;
+    });
+
+    document.getElementById("link-sair").addEventListener("click", function (evento) {
+      evento.preventDefault();
+      sair();
+      window.location.href = "login.html";
+    });
+
     mostrarCarrinho();
   </script>
 </body>
