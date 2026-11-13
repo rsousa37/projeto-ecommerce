@@ -40,6 +40,10 @@ function estaLogado() {
   return armazenamento.getItem("sessao") !== null;
 }
 
+function sair() {
+  armazenamento.removeItem("sessao");
+}
+
 // ---------- Produtos ----------
 function buscarProduto(id) {
   for (var i = 0; i < PRODUTOS.length; i++) {
@@ -90,6 +94,9 @@ function calcularTotal() {
   return Math.round(total * 100) / 100;
 }
 
+function limparCarrinho() {
+  armazenamento.removeItem("carrinho");
+}
 
 // ---------- Utilidades ----------
 function formatarPreco(valor) {
@@ -99,10 +106,10 @@ function formatarPreco(valor) {
 // ---------- Arquivo de testes usa as funções no Node.
 if (typeof module !== "undefined") {
   module.exports = {
-    fazerLogin: fazerLogin, estaLogado: estaLogado,
+    fazerLogin: fazerLogin, estaLogado: estaLogado, sair: sair,
     buscarProduto: buscarProduto, obterCarrinho: obterCarrinho,
     adicionarAoCarrinho: adicionarAoCarrinho, removerDoCarrinho: removerDoCarrinho,
-    calcularTotal: calcularTotal,
+    calcularTotal: calcularTotal, limparCarrinho: limparCarrinho,
     formatarPreco: formatarPreco
   };
 }
