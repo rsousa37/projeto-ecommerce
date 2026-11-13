@@ -1,0 +1,9 @@
+# Dependências do projeto
+# O projeto usa apenas HTML, CSS e JavaScript puro: não há bibliotecas para instalar.
+
+Para executar a loja:
+- Navegador moderno (Chrome, Firefox, Edge ou Safari)
+
+Para executar os testes (opcional):
+- Node.js 14 ou superior (comando: node tests/testes.js)
+- ou apenas abrir tests/testes.html no navegador
