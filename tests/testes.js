@@ -1,3 +1,8 @@
+// testes.js - testes simples da lógica da loja
+// Executar no terminal:  node tests/testes.js
+// Ou abrir tests/testes.html no navegador (usa o localStorage real do navegador).
+
+// No Node, carrega as funções do loja.js
 if (typeof require !== "undefined") {
   var loja = require("../src/js/loja.js");
   Object.keys(loja).forEach(function (nome) { globalThis[nome] = loja[nome]; });
@@ -24,18 +29,20 @@ function esperar(descricao, obtido, esperado) {
   }
 }
 
-// Esvazia o carrinho removendo cada item
 function limparTudo() {
-  obterCarrinho().forEach(function (item) {
-    removerDoCarrinho(item.id);
-  });
+  sair();
+  limparCarrinho();
 }
 
 // ---------- Testes de login ----------
+limparTudo();
 esperar("login com dados corretos retorna verdadeiro", fazerLogin("aluno", "1234"), true);
 esperar("após login válido, estaLogado é verdadeiro", estaLogado(), true);
+sair();
+esperar("após sair, estaLogado é falso", estaLogado(), false);
 esperar("login com senha errada retorna falso", fazerLogin("aluno", "0000"), false);
 esperar("login com usuário inexistente retorna falso", fazerLogin("outro", "1234"), false);
+esperar("login inválido não cria sessão", estaLogado(), false);
 
 // ---------- Testes de carrinho ----------
 limparTudo();
@@ -58,6 +65,8 @@ removerDoCarrinho(1);
 esperar("remover o caderno deixa 1 item", obterCarrinho().length, 1);
 esperar("total só com a mochila é 89.9", calcularTotal(), 89.9);
 
+limparCarrinho();
+esperar("limpar carrinho zera o total", calcularTotal(), 0);
 esperar("formatarPreco usa vírgula", formatarPreco(18.9), "R$ 18,90");
 
 limparTudo();
