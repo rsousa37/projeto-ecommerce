@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Carrinho - Mini Loja</title>
+  <link rel="stylesheet" href="css/estilo.css">
+</head>
+<body>
+  <header>
+    <strong>Mini Loja</strong>
+    <nav>
+      <a href="produtos.html">Produtos</a>
+      <a href="carrinho.html">Carrinho</a>
+    </nav>
+  </header>
+
+  <main>
+    <h2>Seu carrinho</h2>
+    <div id="itens"></div>
+    <p class="total" id="total"></p>
+  </main>
+
+  <script src="js/loja.js"></script>
+  <script>
+    if (!estaLogado()) {
+      window.location.href = "login.html";
+    }
+
+    // Desenha os itens do carrinho e o total
+    function mostrarCarrinho() {
+      var area = document.getElementById("itens");
+      var carrinho = obterCarrinho();
+      area.innerHTML = "";
+
+      if (carrinho.length === 0) {
+        area.innerHTML = "<p>Seu carrinho está vazio. Escolha produtos na página Produtos.</p>";
+      }
+
+      carrinho.forEach(function (item) {
+        var produto = buscarProduto(item.id);
+        var div = document.createElement("div");
+        div.className = "item";
+        div.innerHTML =
+          "<span>" + produto.nome + " (x" + item.quantidade + ") - " +
+          formatarPreco(produto.preco * item.quantidade) + "</span>" +
+          '<button data-id="' + item.id + '">Remover</button>';
+        area.appendChild(div);
+      });
+
+      document.getElementById("total").textContent = "Total: " + formatarPreco(calcularTotal());
+    }
+
+    document.getElementById("itens").addEventListener("click", function (evento) {
+      var id = evento.target.getAttribute("data-id");
+      if (id) {
+        removerDoCarrinho(Number(id));
+        mostrarCarrinho();
+      }
+    });
+
+    
+    mostrarCarrinho();
+  </script>
+</body>
+</html>
