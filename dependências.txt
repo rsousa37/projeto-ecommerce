@@ -1,0 +1,6 @@
+# Dependências do projeto Mini Loja
+# Fonte oficial: package.json e package-lock.json (instalar com: npm ci)
+
+Ambiente: Node.js 22 (mínimo 20) e npm 10
+Dependências de execução: nenhuma
+Dependências de desenvolvimento: c8 (relatório e validação de cobertura)

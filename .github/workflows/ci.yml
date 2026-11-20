@@ -1,0 +1,142 @@
+name: CI Mini Loja
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+env:
+  NODE_VERSION: "22"
+
+jobs:
+  # ---------------------------------------------------------------- BUILD
+  build:
+    name: 1 - Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixar o código
+        uses: actions/checkout@v4
+
+      - name: Configurar o Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Instalar dependências (a partir do package-lock.json)
+        run: npm ci
+
+      - name: Verificar que os arquivos da loja existem
+        run: |
+          for arquivo in src/login.html src/produtos.html src/carrinho.html src/css/estilo.css src/js/loja.js; do
+            test -f "$arquivo" || { echo "Arquivo ausente: $arquivo"; exit 1; }
+          done
+
+      - name: Verificar a sintaxe do JavaScript
+        run: node --check src/js/loja.js
+
+      - name: Registrar as versões do ambiente
+        run: |
+          node --version
+          npm --version
+          npm ls --depth=0
+
+  # ---------------------------------------------------------------- TEST
+  unit-tests:
+    name: 2a - Testes unitários
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixar o código
+        uses: actions/checkout@v4
+      - name: Configurar o Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - name: Instalar dependências
+        run: npm ci
+      - name: Executar testes unitários
+        run: npm run test:unit
+
+  integration-tests:
+    name: 2b - Testes de integração
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixar o código
+        uses: actions/checkout@v4
+      - name: Configurar o Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - name: Instalar dependências
+        run: npm ci
+      - name: Executar testes de integração
+        run: npm run test:integration
+
+  coverage:
+    name: 2c - Validação de cobertura
+    needs: [unit-tests, integration-tests]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixar o código
+        uses: actions/checkout@v4
+      - name: Configurar o Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - name: Instalar dependências
+        run: npm ci
+      - name: Medir cobertura e validar limiares
+        run: npm run coverage
+      - name: Guardar o relatório de cobertura
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: relatorio-de-cobertura
+          path: coverage/
+          retention-days: 30
+
+  # ------------------------------------------------------------- ARTIFACT
+  artifact:
+    name: 3 - Artefato
+    needs: coverage
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixar o código
+        uses: actions/checkout@v4
+
+      - name: Definir a versão do artefato
+        id: versao
+        run: |
+          VERSAO=$(node -p "require('./package.json').version")
+          NOME="mini-loja-v${VERSAO}-build${{ github.run_number }}"
+          echo "versao=${VERSAO}" >> "$GITHUB_OUTPUT"
+          echo "nome=${NOME}" >> "$GITHUB_OUTPUT"
+
+      - name: Gerar o pacote da aplicação
+        run: |
+          mkdir -p dist
+          {
+            echo "Projeto: Mini Loja"
+            echo "Versão: ${{ steps.versao.outputs.versao }}"
+            echo "Build: ${{ github.run_number }}"
+            echo "Commit: ${{ github.sha }}"
+            echo "Data: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          } > build-info.txt
+          tar -czf "dist/${{ steps.versao.outputs.nome }}.tar.gz" src README.md build-info.txt
+
+      - name: Publicar o artefato
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.versao.outputs.nome }}
+          path: dist/${{ steps.versao.outputs.nome }}.tar.gz
+          if-no-files-found: error
+          retention-days: 30
