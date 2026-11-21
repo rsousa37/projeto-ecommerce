@@ -1,0 +1,13 @@
+node_modules
+coverage
+dist
+.git
+.github
+.gitignore
+.nvmrc
+docs
+tests
+*.md
+dependências.txt
+Dockerfile
+.dockerignore
